@@ -1,0 +1,4 @@
+name: Aeternum
+version: '${project.version}'
+main: wcorrupt.aeternum.Aeternum
+api-version: '1.20'
