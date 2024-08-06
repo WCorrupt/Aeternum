@@ -1,0 +1,40 @@
+boxes:
+  obsidian:
+    reset_interval: 600 # Reset every 30 seconds (600 ticks)
+    locations: []
+  obsidian1:
+    reset_interval: 600
+    locations: []
+  obsidian2:
+    reset_interval: 600
+    locations: []
+  obsidian3:
+    reset_interval: 600
+    locations: []
+  bamboo:
+    reset_interval: 600
+    locations: []
+  bamboo1:
+    reset_interval: 600
+    locations: []
+  bamboo2:
+    reset_interval: 600
+    locations: []
+  bamboo3:
+    reset_interval: 600
+    locations: []
+  amethyst:
+    reset_interval: 600
+    locations: []
+  amethyst1:
+    reset_interval: 600
+    locations: []
+  amethyst2:
+    reset_interval: 600
+    locations: []
+  amethyst3:
+    reset_interval: 600
+    locations: []
+  Testing:
+    reset_interval: 600
+    locations: []

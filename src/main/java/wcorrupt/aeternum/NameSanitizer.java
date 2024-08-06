@@ -6,7 +6,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scoreboard.Team;
 
 public class NameSanitizer implements Listener {
 
@@ -18,13 +17,15 @@ public class NameSanitizer implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+        // Get the player who joined
         Player player = event.getPlayer();
-        player.setDisplayName(ChatColor.GRAY + player.getName());
-        player.setPlayerListName(ChatColor.GRAY + player.getName());
 
-        // Remove player from all teams
-        for (Team team : player.getScoreboard().getTeams()) {
-            team.removeEntry(player.getName());
-        }
+        // Set display name and player list name to white
+        String whiteName = ChatColor.WHITE + player.getName();
+        player.setDisplayName(whiteName);
+        player.setPlayerListName(whiteName);
+
+        // Log the action
+        plugin.getLogger().info("Set name to white for player: " + player.getName());
     }
 }

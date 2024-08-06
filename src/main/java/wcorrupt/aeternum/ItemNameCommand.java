@@ -19,6 +19,13 @@ public class ItemNameCommand implements CommandExecutor {
         }
 
         Player player = (Player) sender;
+        ItemStack item = player.getInventory().getItemInMainHand();
+
+        if (item == null || item.getType().isAir()) {
+            player.sendMessage(ChatColor.RED + "You must hold an item to rename it.");
+            return true;
+        }
+
         if (args.length == 0) {
             player.sendMessage(ChatColor.RED + "Please provide a name for the item.");
             return false;
@@ -26,12 +33,6 @@ public class ItemNameCommand implements CommandExecutor {
 
         String name = String.join(" ", args);
         String formattedName = translateHexColorCodes(name);
-
-        ItemStack item = player.getInventory().getItemInMainHand();
-        if (item == null || !item.hasItemMeta()) {
-            player.sendMessage(ChatColor.RED + "You must hold an item to rename it.");
-            return true;
-        }
 
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
@@ -46,6 +47,22 @@ public class ItemNameCommand implements CommandExecutor {
     }
 
     private String translateHexColorCodes(String message) {
-        return message.replaceAll("&", "§");
+        StringBuilder result = new StringBuilder();
+        char[] chars = message.toCharArray();
+
+        for (int i = 0; i < chars.length; i++) {
+            if (chars[i] == '&' && i + 7 < chars.length && chars[i + 1] == '#') {
+                String hex = message.substring(i + 2, i + 8);
+                result.append("§x");
+                for (char hexChar : hex.toCharArray()) {
+                    result.append('§').append(hexChar);
+                }
+                i += 7; // Skip the hex code
+            } else {
+                result.append(chars[i]);
+            }
+        }
+
+        return result.toString();
     }
 }

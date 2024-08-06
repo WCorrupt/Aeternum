@@ -7,6 +7,7 @@ import org.bukkit.command.TabCompleter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class KitTabCompleter implements TabCompleter {
 
@@ -19,10 +20,10 @@ public class KitTabCompleter implements TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            Set<String> kits = plugin.getKitsConfig().getConfigurationSection("kits").getKeys(false);
-            List<String> kitList = new ArrayList<>(kits);
-            kitList.sort(String::compareToIgnoreCase);
-            return kitList;
+            Set<String> kitNames = plugin.getKitsConfig().getConfigurationSection("kits").getKeys(false);
+            return new ArrayList<>(kitNames).stream()
+                    .filter(kit -> kit.toLowerCase().startsWith(args[0].toLowerCase()))
+                    .collect(Collectors.toList());
         }
         return null;
     }
