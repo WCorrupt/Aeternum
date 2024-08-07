@@ -27,7 +27,7 @@ public class Aeternum extends JavaPlugin {
 
         // Register event listeners and commands
         getServer().getPluginManager().registerEvents(new NameSanitizer(this), this);
-        getServer().getPluginManager().registerEvents(new ChatListener(this, luckPerms), this);
+       // getServer().getPluginManager().registerEvents(new ChatListener(this, luckPerms), this);
 
         registerCommand("fly", new FlyCommand());
         registerCommand("flyspeed", new FlySpeedCommand());

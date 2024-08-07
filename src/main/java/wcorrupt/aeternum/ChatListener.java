@@ -25,23 +25,25 @@ public class ChatListener implements Listener {
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         User user = luckPerms.getUserManager().getUser(event.getPlayer().getUniqueId());
         if (user == null) {
-            return;
+            return; // No user data available
         }
 
+        // Fetch the prefix if available
         QueryOptions queryOptions = luckPerms.getContextManager().getQueryOptions(user).orElse(null);
         String prefix = user.getCachedData().getMetaData(queryOptions).getPrefix();
         if (prefix == null) {
-            prefix = "";
+            prefix = ""; // No prefix set, default to empty
         }
 
-        prefix = sanitize(prefix);
-
+        // Convert display name to custom font and set color to grey
         String customName = convertToCustomFont(event.getPlayer().getName());
         String displayName = ChatColor.WHITE + customName;
 
+        // Determine message color based on permission
         String messageColor = event.getPlayer().hasPermission("aeternum.whitechat") ? ChatColor.WHITE.toString() : ChatColor.GRAY.toString();
         String messageFormat = String.format("%s%s%s: %s%s", translateHexColorCodes(prefix), displayName, ChatColor.RESET, messageColor, event.getMessage());
 
+        // Set formatted message
         event.setFormat(messageFormat);
     }
 
@@ -51,20 +53,18 @@ public class ChatListener implements Listener {
             if (c >= 'a' && c <= 'z') {
                 result.append(customFont[c - 'a']);
             } else {
-                result.append(c);
+                result.append(c); // Keep non-alphabet characters unchanged
             }
         }
         return result.toString();
     }
 
     private String translateHexColorCodes(String message) {
+        // Convert hex color codes (&#AABBCC) to Minecraft's internal format (§x§A§B§B§C§C)
         message = message.replaceAll("(?i)&#([A-Fa-f0-9])([A-Fa-f0-9])([A-Fa-f0-9])([A-Fa-f0-9])([A-Fa-f0-9])([A-Fa-f0-9])",
                 "§x§$1§$2§$3§$4§$5§$6");
+        // Convert standard color codes (&1, &f, etc.) to Minecraft's internal format (§1, §f, etc.)
         message = message.replaceAll("&([0-9a-fA-Fk-oK-OrR])", "§$1");
         return message;
-    }
-
-    private String sanitize(String input) {
-        return input.replaceAll("[^\\p{L}\\p{N}\\p{P}\\p{Z}]", "").replaceAll("[\\x00-\\x1F\\x7F]", "");
     }
 }
