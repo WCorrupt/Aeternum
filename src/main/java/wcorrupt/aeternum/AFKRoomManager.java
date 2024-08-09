@@ -112,7 +112,7 @@ public class AFKRoomManager implements CommandExecutor {
                     Bukkit.broadcastMessage(ChatColor.GREEN + "All players have gotten an AFK reward!");
                 });
             }
-        }.runTaskTimer(plugin, 0L, 3600L); // Run every 3 minutes (3600 ticks)
+        }.runTaskTimer(plugin, 0L, 2400L); // Run every 3 minutes (3600 ticks)
     }
 
     private boolean isInAFKRegion(Player player) {

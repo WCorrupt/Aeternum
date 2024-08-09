@@ -50,7 +50,7 @@ public class ShieldDisabler implements Listener, CommandExecutor {
 
             // Apply the shield disable effect
             target.setCooldown(Material.SHIELD, 200); // 200 ticks = 10 seconds
-            target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 200, 1)); // Simulate shield being lowered
+          //  target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 200, 1)); // Simulate shield being lowered
 
             // Apply the item cooldown
             damager.setCooldown(item.getType(), 400); // 400 ticks = 20 seconds

@@ -79,6 +79,10 @@ commands:
     permission: op
     permission-message: You do not have permission to use this command.
 
+  staffchat:
+    description: Toggle staff chat or send a message in staff chat.
+    usage: /staffchat [message]
+    permission: staff.chat
 permissions:
   aeternum.fly:
     description: Allows toggling fly mode.
@@ -102,4 +106,7 @@ permissions:
   aeternum.trash:
     default: op
   aeternum.whitechat:
+    default: op
+  staff.chat:
+    description: Allows access to staff chat commands and messages.
     default: op
