@@ -27,17 +27,7 @@ commands:
     permission: aeternum.unfreeze
   giveinfcart:
     permission: op
-  createwarp:
-    description: Create a warp point
-    usage: /createwarp <name>
-    permission: op
-  warp:
-    description: Warp to a point
-    usage: /warp <name>
-  deletewarp:
-    description: Delete a warp point
-    usage: /deletewarp <name>
-    permission: op
+
 
   createkit:
     description: Create a kit from your current inventory.
@@ -51,14 +41,7 @@ commands:
     description: Delete a kit.
     usage: /deletekit <name>
     permission: op
-  spawn:
-    description: Teleports the player to spawn after 5 seconds if they don't move.
-    usage: /spawn
-  spawnadmin:
-    description: Instantly teleports the player to spawn if they have the permission.
-    usage: /spawnadmin
-    permission: aeternum.spawnadmin
-    permission-message: You do not have permission to use this command.
+
   giveshieldbreaker:
     description: "Gives the item in hand a custom tag"
     permission: op

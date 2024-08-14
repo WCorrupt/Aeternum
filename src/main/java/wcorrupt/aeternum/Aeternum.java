@@ -44,11 +44,11 @@ public class Aeternum extends JavaPlugin {
         createWarpsConfig();
 
         // Register warp commands and their tab completers
-        this.getCommand("createwarp").setExecutor(new CreateWarpCommand(this));
-        this.getCommand("warp").setExecutor(new WarpCommand(this));
-        this.getCommand("deletewarp").setExecutor(new DeleteWarpCommand(this));
-        this.getCommand("warp").setTabCompleter(new WarpTabCompleter(this));
-        this.getCommand("deletewarp").setTabCompleter(new WarpTabCompleter(this));
+       // this.getCommand("createwarp").setExecutor(new CreateWarpCommand(this));
+       // this.getCommand("warp").setExecutor(new WarpCommand(this));
+       // this.getCommand("deletewarp").setExecutor(new DeleteWarpCommand(this));
+       // this.getCommand("warp").setTabCompleter(new WarpTabCompleter(this));
+       // this.getCommand("deletewarp").setTabCompleter(new WarpTabCompleter(this));
 
         // Initialize and load the kits configuration
         createKitsConfig();
@@ -65,10 +65,10 @@ public class Aeternum extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new CartPlaceListener(this), this);
 
         // Register the spawn command
-        wcorrupt.aeternum.SpawnCommand spawnCommand = new wcorrupt.aeternum.SpawnCommand(this);
-        registerCommand("spawn", spawnCommand);
-        registerCommand("spawnadmin", spawnCommand);
-        getServer().getPluginManager().registerEvents(spawnCommand, this);
+       // wcorrupt.aeternum.SpawnCommand spawnCommand = new wcorrupt.aeternum.SpawnCommand(this);
+       // registerCommand("spawn", spawnCommand);
+       // registerCommand("spawnadmin", spawnCommand);
+       // getServer().getPluginManager().registerEvents(spawnCommand, this);
 
         // Register the ShieldDisabler command and event listener
         ShieldDisabler shieldDisabler = new ShieldDisabler(this);
