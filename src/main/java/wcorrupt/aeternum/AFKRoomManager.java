@@ -147,7 +147,7 @@ public class AFKRoomManager implements CommandExecutor {
                         player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 105, 0, false, false, false));
                     } else {
                         afkPlayers.remove(player);
-                        player.removePotionEffect(PotionEffectType.INVISIBILITY);
+                        //player.removePotionEffect(PotionEffectType.INVISIBILITY);
                     }
                 }
             }

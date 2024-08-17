@@ -3,99 +3,52 @@ package wcorrupt.aeternum;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.query.QueryOptions;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.TabCompleter;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-public class ChatListener implements Listener, CommandExecutor, TabCompleter {
+public class ChatListener implements Listener {
 
     private final JavaPlugin plugin;
     private final LuckPerms luckPerms;
     private final String[] customFont;
-    private final Map<UUID, Boolean> staffChatToggle;
 
     public ChatListener(JavaPlugin plugin, LuckPerms luckPerms) {
         this.plugin = plugin;
         this.luckPerms = luckPerms;
         this.customFont = new String[]{"ᴀ", "ʙ", "ᴄ", "ᴅ", "ᴇ", "ꜰ", "ɢ", "ʜ", "ɪ", "ᴊ", "ᴋ", "ʟ", "ᴍ", "ɴ", "ᴏ", "ᴘ", "ǫ", "ʀ", "ꜱ", "ᴛ", "ᴜ", "ᴠ", "ᴡ", "x", "ʏ", "ᴢ"};
-        this.staffChatToggle = new HashMap<>();
-        plugin.getCommand("staffchat").setExecutor(this);
-        plugin.getCommand("staffchat").setTabCompleter(this);
     }
 
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
-        Player player = event.getPlayer();
-        UUID playerId = player.getUniqueId();
-
-        // Handle staff chat
-        if (staffChatToggle.getOrDefault(playerId, false)) {
-            if (player.hasPermission("staff.chat")) {
-                event.setCancelled(true);
-                broadcastStaffChatMessage(player, event.getMessage());
-                return;
-            }
-        }
-
-        // Regular chat formatting
-        User user = luckPerms.getUserManager().getUser(playerId);
+        User user = luckPerms.getUserManager().getUser(event.getPlayer().getUniqueId());
         if (user == null) {
-            return;
+            return; // No user data available
         }
 
+        // Fetch the prefix if available
         QueryOptions queryOptions = luckPerms.getContextManager().getQueryOptions(user).orElse(null);
         String prefix = user.getCachedData().getMetaData(queryOptions).getPrefix();
         if (prefix == null) {
-            prefix = "";
+            prefix = ""; // No prefix set, default to empty
         }
 
-        String customName = convertToCustomFont(player.getName());
+        // Convert display name to custom font and set color to grey
+        String customName = convertToCustomFont(event.getPlayer().getName());
         String displayName = ChatColor.WHITE + customName;
 
-        String messageColor = player.hasPermission("aeternum.whitechat") ? ChatColor.WHITE.toString() : ChatColor.GRAY.toString();
-        String finalMessage = String.format("%s%s%s: %s%s", translateHexColorCodes(prefix), displayName, ChatColor.RESET, messageColor, event.getMessage());
+        // Determine message color based on permission
+        String messageColor = event.getPlayer().hasPermission("aeternum.whitechat") ? ChatColor.WHITE.toString() : ChatColor.GRAY.toString();
 
-        event.setCancelled(true);
-        Bukkit.broadcastMessage(finalMessage);
-    }
+        // Apply word filtering
+        String message = filterMessage(event.getMessage());
 
-    private void broadcastStaffChatMessage(Player player, String message) {
-        User user = luckPerms.getUserManager().getUser(player.getUniqueId());
-        if (user == null) {
-            return;
-        }
+        String messageFormat = String.format("%s%s%s: %s%s", translateHexColorCodes(prefix), displayName, ChatColor.RESET, messageColor, message);
 
-        QueryOptions queryOptions = luckPerms.getContextManager().getQueryOptions(user).orElse(null);
-        String prefix = user.getCachedData().getMetaData(queryOptions).getPrefix();
-        if (prefix == null) {
-            prefix = "";
-        }
-
-        String customName = convertToCustomFont(player.getName());
-        String displayName = ChatColor.WHITE + customName;
-
-        String staffMessage = String.format("%s%s %s%s%s: %s%s", ChatColor.BLUE, "StaffChat", translateHexColorCodes(prefix), displayName, ChatColor.RESET, ChatColor.WHITE, message);
-
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            if (onlinePlayer.hasPermission("staff.chat")) {
-                onlinePlayer.sendMessage(staffMessage);
-            }
-        }
+        // Set formatted message
+        event.setFormat(messageFormat);
     }
 
     private String convertToCustomFont(String input) {
@@ -104,10 +57,32 @@ public class ChatListener implements Listener, CommandExecutor, TabCompleter {
             if (c >= 'a' && c <= 'z') {
                 result.append(customFont[c - 'a']);
             } else {
-                result.append(c);
+                result.append(c); // Keep non-alphabet characters unchanged
             }
         }
         return result.toString();
+    }
+
+    private String filterMessage(String message) {
+        // Replace the list of bad words with §7《§4§lBAD WORD§7》§r
+        String[] badWords = {"retard", "fuck", "faggot", "twat", "piss", "shit", "bitch", "slut", "pussy", "anal", "dick", "cum", "cock", "wanker", "nigga", "niggas", "cunt", "niggers", "ngga", "ngger", "n1gger", "n1gg3r", "n1iggers", "n1gg3rs", "kys", "KYS", "penis", "niggwe", "nigger"};
+        for (String word : badWords) {
+            message = message.replaceAll("(?i)" + word, "§7《§4§lBAD WORD§7》§r");
+        }
+
+        // Replace the list of spaced out bad words with §7《§4§lBAD WORD§7》§r
+        String[] spacedBadWords = {"fu ck", "fuc k", "f u c k", "f uck", "f uc k", "k y s", "p e n i s", "n i g g w e", "f u ck"};
+        for (String word : spacedBadWords) {
+            message = message.replaceAll("(?i)" + word, "§7《§4§lBAD WORD§7》§r");
+        }
+
+        // Replace the list of spaced out and altered bad words with §7《§4§lBADWORD§7》§r
+        String[] otherBadWords = {"sh it", "s h i t", "shi t", "s h it", "s hit", "sh i t", "shite", "b i t c h", "bitc h", "bit ch", "b itch", "bit c h", "b i t ch"};
+        for (String word : otherBadWords) {
+            message = message.replaceAll("(?i)" + word, "§7《§4§lBADWORD§7》§r");
+        }
+
+        return message;
     }
 
     private String translateHexColorCodes(String message) {
@@ -117,44 +92,5 @@ public class ChatListener implements Listener, CommandExecutor, TabCompleter {
         // Convert standard color codes (&1, &f, etc.) to Minecraft's internal format (§1, §f, etc.)
         message = message.replaceAll("&([0-9a-fA-Fk-oK-OrR])", "§$1");
         return message;
-    }
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "Only players can use this command.");
-            return true;
-        }
-
-        Player player = (Player) sender;
-        UUID playerId = player.getUniqueId();
-
-        if (args.length == 0) {
-            boolean newToggleState = !staffChatToggle.getOrDefault(playerId, false);
-            staffChatToggle.put(playerId, newToggleState);
-            player.sendMessage(ChatColor.GREEN + "Staff Chat toggled " + (newToggleState ? "On" : "Off"));
-            return true;
-        }
-
-        if (args.length >= 1) {
-            if (!player.hasPermission("staff.chat")) {
-                player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
-                return true;
-            }
-            String message = String.join(" ", args);
-            broadcastStaffChatMessage(player, message);
-            return true;
-        }
-
-        player.sendMessage(ChatColor.RED + "Invalid usage. Use /staffchat [message] or just /staffchat to toggle.");
-        return true;
-    }
-
-    @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (args.length == 1) {
-            return Stream.of("on", "off").filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
-        }
-        return null;
     }
 }
